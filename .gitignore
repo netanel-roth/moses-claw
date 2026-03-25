@@ -1,1 +1,8 @@
 .secrets.*
+
+# Local research (main copy lives at ~/claude-workspace/openclaw/)
+resources/
+knowledge/
+plans/
+playground/
+deliverables/
