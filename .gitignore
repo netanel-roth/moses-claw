@@ -6,3 +6,6 @@ knowledge/
 plans/
 playground/
 deliverables/
+
+# Co-located workspace repos (separate git repos)
+workspaces/
