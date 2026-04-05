@@ -1,0 +1,55 @@
+
+
+services:
+  openclaw-gateway:
+    image: ${OPENCLAW_IMAGE}
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+      - .env.secrets
+    environment:
+      - HOME=/home/node
+      - NODE_ENV=production
+      - TERM=xterm-256color
+      - OPENCLAW_GATEWAY_BIND=${OPENCLAW_GATEWAY_BIND}
+      - OPENCLAW_GATEWAY_PORT=${OPENCLAW_GATEWAY_PORT}
+      - XDG_CONFIG_HOME=${XDG_CONFIG_HOME}
+      - PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    volumes:
+      - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
+      - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+      - /home/openclaw/.ssh:/home/node/.ssh
+      - /home/openclaw/.openclaw/workspace-ami-support:/home/openclaw/.openclaw/workspace-ami-support
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/openclaw-secret-resolver:/usr/local/bin/openclaw-secret-resolver:ro
+    ports:
+      - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
+    command:
+      [
+        "node",
+        "dist/index.js",
+        "gateway",
+        "--bind",
+        "${OPENCLAW_GATEWAY_BIND}",
+        "--port",
+        "${OPENCLAW_GATEWAY_PORT}",
+      ]
+
+  openclaw-cli:
+    image: ${OPENCLAW_IMAGE}
+    env_file:
+      - .env
+      - .env.secrets
+    environment:
+      - HOME=/home/node
+      - NODE_ENV=production
+      - XDG_CONFIG_HOME=${XDG_CONFIG_HOME}
+    volumes:
+      - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
+      - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+      - /home/openclaw/.ssh:/home/node/.ssh
+      - /home/openclaw/.openclaw/workspace-ami-support:/home/openclaw/.openclaw/workspace-ami-support
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/openclaw-secret-resolver:/usr/local/bin/openclaw-secret-resolver:ro
+    profiles: ["cli"]

@@ -1,0 +1,230 @@
+
+
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.24-beta.2",
+    "lastTouchedAt": "2026-04-05T15:01:13.673Z"
+  },
+  "env": {
+    "GROQ_API_KEY": "${GROQ_API_KEY}"
+  },
+  "browser": {
+    "enabled": true,
+    "executablePath": "/usr/bin/chromium",
+    "headless": true,
+    "noSandbox": true
+  },
+  "secrets": {
+    "providers": {
+      "gcp": {
+        "source": "exec",
+        "command": "/usr/local/bin/openclaw-secret-resolver",
+        "jsonOnly": true
+      }
+    },
+    "defaults": {
+      "exec": "gcp"
+    }
+  },
+  "auth": {
+    "profiles": {
+      "openai-codex:moshekeva@gmail.com": {
+        "provider": "openai-codex",
+        "mode": "oauth"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai-codex/gpt-5.4",
+        "fallbacks": []
+      },
+      "models": {
+        "anthropic/claude-sonnet-4-6": {
+          "alias": "sonnet",
+          "params": {
+            "cacheRetention": "short"
+          }
+        },
+        "openai-codex/gpt-5.4": {}
+      },
+      "workspace": "/home/node/.openclaw/workspace",
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "1h"
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "heartbeat": {
+        "every": "30m"
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true,
+        "workspace": "/home/node/.openclaw/workspace"
+      },
+      {
+        "id": "ami-support",
+        "workspace": "/home/openclaw/.openclaw/workspace-ami-support",
+        "model": {
+          "primary": "openai-codex/gpt-5.4",
+          "fallbacks": []
+        },
+        "sandbox": {
+          "mode": "all",
+          "backend": "docker",
+          "workspaceAccess": "rw",
+          "scope": "session"
+        },
+        "tools": {
+          "allow": [
+            "exec",
+            "read",
+            "write",
+            "edit",
+            "apply_patch",
+            "memory_search",
+            "memory_get",
+            "web_fetch",
+            "browser",
+            "cron",
+            "message"
+          ],
+          "deny": [
+            "elevated",
+            "gateway",
+            "sessions_spawn",
+            "whatsapp_login"
+          ]
+        }
+      }
+    ]
+  },
+  "tools": {
+    "media": {
+      "audio": {
+        "enabled": true,
+        "language": "he",
+        "models": [
+          {
+            "provider": "groq",
+            "model": "whisper-large-v3-turbo"
+          }
+        ]
+      }
+    }
+  },
+  "bindings": [
+    {
+      "agentId": "ami-support",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363425053244769@g.us"
+        }
+      }
+    },
+    {
+      "agentId": "ami-support",
+      "match": {
+        "channel": "whatsapp",
+        "peer": {
+          "kind": "group",
+          "id": "120363405405269909@g.us"
+        }
+      }
+    }
+  ],
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "channels": {
+    "whatsapp": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "allowFrom": [
+        "+972546644099",
+        "+972532399331"
+      ],
+      "groupPolicy": "open",
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
+      "ackReaction": {
+        "emoji": "👀",
+        "direct": true,
+        "group": "never"
+      },
+      "debounceMs": 0,
+      "mediaMaxMb": 50
+    },
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "allowlist",
+      "botToken": {
+        "source": "exec",
+        "provider": "gcp",
+        "id": "TELEGRAM_BOT_TOKEN"
+      },
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
+      "allowFrom": [
+        233772391
+      ],
+      "groupPolicy": "allowlist",
+      "streaming": "partial",
+      "ackReaction": "🫡"
+    }
+  },
+  "gateway": {
+    "mode": "local",
+    "controlUi": {
+      "allowedOrigins": [
+        "http://127.0.0.1:18789"
+      ]
+    },
+    "auth": {
+      "mode": "token",
+      "token": {
+        "source": "exec",
+        "provider": "gcp",
+        "id": "OPENCLAW_GATEWAY_TOKEN"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "groq": {
+        "enabled": true
+      },
+      "tavily": {
+        "enabled": true,
+        "config": {
+          "webSearch": {
+            "apiKey": {
+              "source": "exec",
+              "provider": "gcp",
+              "id": "TAVILY_API_KEY"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+
+
+* * * * * cd /home/openclaw/.openclaw/workspace-ami-support && GIT_SSH_COMMAND="ssh -i /home/openclaw/.ssh/github_deploy_ami -o StrictHostKeyChecking=no" git add -A && git diff --cached --quiet || (git commit -m "auto-sync" && GIT_SSH_COMMAND="ssh -i /home/openclaw/.ssh/github_deploy_ami -o StrictHostKeyChecking=no" git push origin main) 2>/dev/null
+* * * * * cd /home/openclaw/.openclaw/workspace && GIT_SSH_COMMAND="ssh -i /home/openclaw/.ssh/github_deploy -o StrictHostKeyChecking=no" git pull --ff-only origin main 2>/dev/null
+* * * * * cd /home/openclaw/.openclaw/workspace && GIT_SSH_COMMAND="ssh -i /home/openclaw/.ssh/github_deploy -o StrictHostKeyChecking=no" git add -A && git diff --cached --quiet || (git commit -m "auto-sync" && GIT_SSH_COMMAND="ssh -i /home/openclaw/.ssh/github_deploy -o StrictHostKeyChecking=no" git push origin main) 2>/dev/null
+* * * * * cd /home/openclaw/.openclaw/workspace-ami-support && BEFORE=$(git rev-parse HEAD) && GIT_SSH_COMMAND="ssh -i /home/openclaw/.ssh/github_deploy_ami -o StrictHostKeyChecking=no" git pull --ff-only origin main 2>/dev/null && AFTER=$(git rev-parse HEAD) && [ "$BEFORE" != "$AFTER" ] && docker rm -f $(docker ps -a --filter name=openclaw-sbx-agent-ami -q) 2>/dev/null || true
